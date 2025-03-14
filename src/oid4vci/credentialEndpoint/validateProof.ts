@@ -85,6 +85,9 @@ export const validateProof = async (
     );
     return { ok: false, error };
   }
+  console.log(`Verifying Proof JWT... ${JSON.stringify(proof.jwt)}`)
+  console.log(`using JWK: ${JSON.stringify(decodedHeader.jwk)}`)
+
   try {
     // iss: OPTIONAL (string).
     // The value of this claim MUST be the client_id of the client making the credential request.
@@ -100,6 +103,7 @@ export const validateProof = async (
     // nonce: REQUIRED (string).
     // The value type of this claim MUST be a string, where the value is a c_nonce provided by the Credential Issuer.
     //
+    console.log(`creating local jwk set...`)
     const JWKS = jose.createLocalJWKSet({
       keys: [decodedHeader.jwk],
     });
@@ -109,6 +113,7 @@ export const validateProof = async (
 
     // Ideally, proofs should be created and tested using the algorithms listed above,
     // and should be listed in the metadata `proof_signing_alg_values_supported`.
+    console.log(`verifyin jwt...`)
     const { payload } = await jose.jwtVerify(proof.jwt, JWKS, {
       audience: credentialIssuer,
     });
